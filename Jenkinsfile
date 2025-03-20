@@ -5,10 +5,14 @@ pipeline {
         }
     }
 
+    environment {
+        DOCKER_IMAGE = 'my-node-app'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/saikumar7817/my-jenkins-pipeline.git'
+                git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/saikumar7817/my-jenkins-pipeline.git'
             }
         }
 
@@ -26,13 +30,13 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t my-node-app .'
+                sh "docker build -t $DOCKER_IMAGE ."
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh 'docker run -d -p 3000:3000 --name my-running-app my-node-app'
+                sh "docker run -d -p 3000:3000 --name my-running-app $DOCKER_IMAGE"
             }
         }
     }
