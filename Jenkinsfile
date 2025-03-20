@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:16-alpine'
+            args '--user=root' // Run as root to avoid permission issues
         }
     }
 
@@ -16,9 +17,15 @@ pipeline {
             }
         }
 
+        stage('Set Permissions') {
+            steps {
+                sh 'mkdir -p ~/.npm && chmod -R 777 ~/.npm' // Ensure npm cache is writable
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh 'npm install --unsafe-perm'
             }
         }
 
